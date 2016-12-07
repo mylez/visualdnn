@@ -7,7 +7,7 @@ public class HyperParameterPanel extends JPanel {
         preferredSize = new Dimension(250, -1);
 
     String[]
-        opt_dataset = new String[]{"MNIST", "Census Salary", "Braille", "OR", "AND", "XOR"},
+        opt_dataset = new String[]{"Census Salary", "Braille", "OR", "AND", "XOR"},
         opt_activation = new String[]{"Tanh", "ReLU", "Logistic", "Linear"},
         opt_learningRate = new String[]{"0.5", "0.1", "0.05", "0.01", "0.01", "0.005", "0.001", "0.0005", "0.0001"},
         opt_initialWeights = new String[]{"Normal", "Half-Normal", "Uniform"};

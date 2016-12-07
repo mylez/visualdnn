@@ -8,9 +8,6 @@ public class NetworkGraphicsPanel extends JPanel {
     int
         fontSize = 9;
 
-    Timer
-        timer;
-
     private DoubleMatrix2D[]
         networkWeights,
         networkBiases,
@@ -173,15 +170,15 @@ public class NetworkGraphicsPanel extends JPanel {
         Color color;
         AlphaComposite alpha;
         if (this.maxWeightValue != 0) {
-            // make sure that the color brightness is in
+            // make sure that the color is in
             // the range [127, 255]
             //
             double normWeight = weight / this.maxWeightValue;
-            int brightness = (int)Math.abs(normWeight * 255);
+            int brightness = (int)Math.abs(normWeight * 127);
             if (weight > 0) {
-                color = new Color(brightness, 0, 0);
+                color = new Color(127 + brightness, 0, 0);
             } else {
-                color = new Color(0, 0, brightness);
+                color = new Color(0, 0, 127 + brightness);
             }
             alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float)Math.abs(normWeight));
         } else {
@@ -190,8 +187,7 @@ public class NetworkGraphicsPanel extends JPanel {
             alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.f);
             color = Color.BLACK;
         }
-        // set up the drawing properties
-        //
+
         g2.setComposite(alpha);
         g2.setColor(color);
     }

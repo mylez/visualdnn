@@ -1,6 +1,4 @@
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
-import cern.jet.math.tdouble.DoubleFunctions;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 public class Util {
 

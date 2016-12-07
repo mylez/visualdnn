@@ -1,4 +1,3 @@
-
 import cern.colt.function.tdouble.DoubleDoubleFunction;
 import cern.colt.function.tdouble.DoubleFunction;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
@@ -17,82 +16,56 @@ public class MatOps {
      */
     public static DoubleFunction tanh = (a) -> Math.tanh(a);
 
+
     /**
      * dTanh is the derivative of the tanh function in range (0, 1)
      *
      */
-    public static DoubleFunction dTanh = new DoubleFunction() {
-        @Override
-        public double apply(double a) {
-            //return a > 0 ? 1 : 0;
-            return 1 - Math.pow(Math.tanh(a), 2);
-        }
-    };
+    public static DoubleFunction dTanh = (a) -> 1 - Math.pow(Math.tanh(a), 2);
+
 
     /**
      * relu is a non-linear activation function in range [0, inf)
      *
      */
-    public static DoubleFunction relu = new DoubleFunction() {
-        @Override
-        public double apply(double a) {
-            return a > 0 ? a : 0;
-        }
-    };
+    public static DoubleFunction relu = (a) -> a > 0 ? a : 0;
+
 
     /**
-     * dRelu is the derivative of the relu function in {0, 1}
+     * dRelu is the derivative of the relu function in {1, 0}
      *
      */
-    public static DoubleFunction dRelu = new DoubleFunction() {
-        @Override
-        public double apply(double a) { return a > 0 ? 1 : 0; }
-    };
+    public static DoubleFunction dRelu = (a) -> a > 0 ? 1 : 0;
+
 
     /**
      * entryPlus is the entrywise addition of two n x m matrices.
      *
      */
-    public static DoubleDoubleFunction entryPlus = new DoubleDoubleFunction() {
-        @Override
-        public double apply(double a, double b) {
-            return a + b;
-        }
-    };
+    public static DoubleDoubleFunction entryPlus = (a, b) -> a + b;
+
 
     /**
      * entryMinus is the entrywise subtraction of two n x m matrices.
      *
      */
-    public static DoubleDoubleFunction entryMinus = new DoubleDoubleFunction() {
-        @Override
-        public double apply(double a, double b) {
-            return a - b;
-        }
-    };
+    public static DoubleDoubleFunction entryMinus = (a, b) -> a - b;
+
 
     /**
      * entryMultiply is the entrywise product of two n x m matrices.
      * also known as the Hadamard product.
      *
      */
-    public static DoubleDoubleFunction entryMultiply = new DoubleDoubleFunction() {
-        @Override
-        public double apply(double a, double b) {
-            return a * b;
-        }
-    };
+    public static DoubleDoubleFunction entryMultiply = (a, b) -> a * b;
+
 
     /**
      * seeded random numbers for predictable tests
      *
      */
-    public static DoubleFunction detRand = new DoubleFunction() {
-        @Override
-        public double apply(double v) {
-            return random.nextDouble();
-        }
-    };
+    public static DoubleFunction detRand = (a) -> random.nextDouble();
+
 
     /**
      *

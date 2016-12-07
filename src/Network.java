@@ -167,12 +167,15 @@ public class Network {
      *  dC / dB_l_j = delta_l_j
      *
      *
-     * @param A
+     * @param AZ
      * @param delta
      * @return
      */
-    public DoubleMatrix2D[] gradient(DoubleMatrix2D[] A, DoubleMatrix2D[] delta) {
-        DoubleMatrix2D[] gradient = new DoubleMatrix2D[this.numLayers - 1];
+    public DoubleMatrix2D[] gradient(DoubleMatrix2D[][] AZ, DoubleMatrix2D[] delta) {
+
+        DoubleMatrix2D[]
+            A = AZ[0],
+            gradient = new DoubleMatrix2D[this.numLayers - 1];
 
         for (int l = 1; l < this.numLayers; l++) {
             DoubleMatrix2D
