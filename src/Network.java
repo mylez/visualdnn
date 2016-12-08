@@ -40,9 +40,7 @@ public class Network {
 
         // initialize weight and bias matrices with proper shapes
         //
-        // todo - instead of unif()*2-1 use zero mean gaussian
-        //
-        double scale = 2, offset = -1;
+        double scale = .1, offset = 0;
         for (int l = 0; l < this.numLayers - 1; l++) {
             this.weights[l] = new DenseDoubleMatrix2D(sizes[l + 1], sizes[l])
                 .assign(MatOps.detRand)
@@ -60,7 +58,7 @@ public class Network {
      *  z_l = W_l * a_l-1 + b_l
      *
      *
-     *  z_l = tanh( a_l )
+     *  a_l = tanh( z_l )
      *
      *
      * @param a
@@ -98,6 +96,11 @@ public class Network {
 
 
     /**
+     * w_l_j_k' = w_l_j_k .- n * dW_l_j_k
+     *
+     *
+     * b_l_j' = b_l_j .- n * dB_l_j
+     *
      *
      * @param gradient
      * @param delta
@@ -132,11 +135,11 @@ public class Network {
      * delta_l = ( ( W_l+1 )' * delta_l+1 ) .* dTanh( z_l )
      *
      *
-     * @param y
      * @param AZ
+     * @param y
      * @return
      */
-    public DoubleMatrix2D[] delta(DoubleMatrix2D y, DoubleMatrix2D[][] AZ) {
+    public DoubleMatrix2D[] delta(DoubleMatrix2D[][] AZ, DoubleMatrix2D y) {
         int maxL = this.numLayers - 1;
 
         DoubleMatrix2D[]
@@ -201,7 +204,7 @@ public class Network {
 
 
     /**
-     *  dC / daL = ( a_L .- y ) .* dTanh( Z_L )
+     *  dC / daL = ( a_L .- y ) .* dTanh( z_L )
      *
      *
      * @param y
@@ -216,7 +219,6 @@ public class Network {
         //
         // ( a_L .- y )
         //
-
         DoubleMatrix2D
 
             batch_dc_daL = aL
@@ -226,7 +228,7 @@ public class Network {
             // then do entry-wise multiplication of
             // nabla_C_a by the activation derivative
             //
-            //  ( a_L .- y ) .* dTanh( Z_L )
+            //  ( a_L .- y ) .* dTanh( z_L )
             //
             .assign(
                 zL

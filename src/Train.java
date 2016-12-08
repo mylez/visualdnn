@@ -11,19 +11,21 @@ public class Train {
         new DenseDoubleMatrix2D(new double[][]{{1}, {1}}),
     };
 
+
     static DoubleMatrix2D[] dataSet_y = new DoubleMatrix2D[] {
-        new DenseDoubleMatrix2D(new double[][]{{0}}),
-        new DenseDoubleMatrix2D(new double[][]{{1}}),
         new DenseDoubleMatrix2D(new double[][]{{1}}),
         new DenseDoubleMatrix2D(new double[][]{{0}}),
+        new DenseDoubleMatrix2D(new double[][]{{0}}),
+        new DenseDoubleMatrix2D(new double[][]{{1}}),
     };
+
 
     public static void train(Network net) {
 
-        int epochs = 1000;
+        int epochs = 100000;
+        System.out.println("training");
 
         for (int epoch = 0; epoch < epochs; epoch++) {
-            System.out.println("training epoch: " + epoch);
 
             for (int sample = 0; sample < dataSet_x.length; sample++) {
                 DoubleMatrix2D
@@ -34,11 +36,12 @@ public class Train {
                     AZ = net.activation(x);
 
                 DoubleMatrix2D[]
-                    delta = net.delta(y, AZ),
+                    delta = net.delta(AZ, y),
                     gradient = net.gradient(AZ, delta);
 
                 net.backprop(gradient, delta);
             }
         }
+        System.out.println("done");
     }
 }

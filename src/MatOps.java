@@ -37,6 +37,9 @@ public class MatOps {
      */
     public static DoubleFunction dRelu = (a) -> a > 0 ? 1 : 0;
 
+    public static DoubleFunction sigmoid = (a) -> _sigmoid(a);
+
+    public static DoubleFunction dSigmoid = (a) -> _sigmoid(a) * (1 - _sigmoid(a));
 
     /**
      * entryPlus is the entrywise addition of two n x m matrices.
@@ -111,5 +114,9 @@ public class MatOps {
             System.out.println(a+"\n");
             // matshow("-----", a);
         }
+    }
+
+    private static double _sigmoid(double a) {
+        return 1 / (1 + Math.exp(-a));
     }
 }

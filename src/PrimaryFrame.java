@@ -21,7 +21,7 @@ public class PrimaryFrame extends JFrame {
     }
 
     public void setView_optionSelect() {
-        this.add(hyperParameterPanel, BorderLayout.WEST);
+        //this.add(hyperParameterPanel, BorderLayout.WEST);
         this.add(networkGraphicsPanel, BorderLayout.CENTER);
     }
 }
