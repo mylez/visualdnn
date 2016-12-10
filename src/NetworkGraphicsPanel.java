@@ -1,4 +1,3 @@
-
 import cern.colt.matrix.tdouble.DoubleFactory2D;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import java.awt.*;
@@ -122,7 +121,6 @@ public class NetworkGraphicsPanel extends JPanel {
     private void paintUnits(Graphics2D g2, Dimension size) {
         int numLayers = this.netActivations.length,
             xPad = this.unitXPad(size.width, numLayers),
-            yPad = this.unitYPad(size.height, Util.maxRowCount(this.netActivations)),
             unitRadius = 13;
         // paint with full opacity
         //
@@ -136,8 +134,8 @@ public class NetworkGraphicsPanel extends JPanel {
 
         for (int layer = 0; layer < numLayers; layer++) {
             int unitXPos = this.unitXPos(xPad, layer) - unitRadius / 2,
-                numUnits = this.netActivations[layer].rows();
-            yPad = this.unitYPad(size.height, this.netActivations[layer].rows());
+                numUnits = this.netActivations[layer].rows(),
+                yPad = this.unitYPad(size.height, this.netActivations[layer].rows());
             for (int unit = 0; unit < numUnits; unit++) {
                 int unitYPos = this.unitYPos(size.height, yPad, numUnits, unit) - unitRadius / 2,
                     labelYPos =  unitYPos + unitRadius / 2,
@@ -181,12 +179,12 @@ public class NetworkGraphicsPanel extends JPanel {
      * @param activation
      */
     private void setDrawProperties_unit(Graphics2D g2, double activation) {
-        int br = Math.abs((int)Math.abs(255 * activation / this.maxActivationValue));
+        int brightness = Math.abs((int)Math.abs(255 * activation / this.maxActivationValue));
         Color color;
         if (activation > 0) {
-            color = new Color(br, 0, 0);
+            color = new Color(brightness, 0, 0);
         } else {
-            color = new Color(0, 0, br);
+            color = new Color(0, 0, brightness);
         }
         g2.setColor(color);
     }
@@ -200,28 +198,31 @@ public class NetworkGraphicsPanel extends JPanel {
     private void setDrawProperties_weight(Graphics2D g2, double weight, double activation) {
         Color color;
         AlphaComposite alpha;
+        float minOpacity = .3f;
+        int minBrightness = 127;
+        double normWeight = (activation / Math.abs(this.maxActivationValue)) * (weight / Math.abs(this.maxWeightValue));
         if (this.maxWeightValue != 0) {
-            // make sure that the color is in [127, 255] and
-            // the opacity is in [0.2, 1]
+            // make sure that color is in [127, 255]
+            // and opacity is in [0.2, 1]
             //
-            double normWeight = (activation / Math.abs(this.maxActivationValue)) * (weight / Math.abs(this.maxWeightValue));
             int brightness = (int)Math.abs(normWeight * 127);
             if (normWeight > 0) {
-                color = new Color(127 + brightness, 0, 0);
+                color = new Color((255 - minBrightness) + brightness, 0, 0);
             } else {
-                color = new Color(0, 0, 127 + brightness);
+                color = new Color(0, 0, minBrightness + brightness);
             }
-            alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .2f + .8f * (float)Math.abs(normWeight));
+            alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, minOpacity + (1 - minOpacity) * (float)Math.abs(normWeight));
         } else {
             // the unlikely case that the max weight is zero
             //
-            alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.f);
+            alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, minOpacity);
             color = Color.BLACK;
         }
         g2.setComposite(alpha);
         g2.setColor(color);
     }
 
+    private int _trainAnimIndex = 0;
     /**
      *
      * @param network
@@ -257,7 +258,8 @@ public class NetworkGraphicsPanel extends JPanel {
                 weights = network.getWeights(),
                 biases = network.getBiases();
 
-            int index = (int)((e.getWhen()%30000)/1000);
+            int delay = 10000,
+                index = (int)(train.trainX.size()*(e.getWhen()%delay) / delay);
 
             DoubleMatrix2D[][] AZ = network.activation(train.trainX.get(index));
             this.setMaxActivationValue(Util.absMaxElement(AZ[0]));

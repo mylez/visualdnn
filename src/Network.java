@@ -4,6 +4,47 @@ import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import cern.jet.math.tdouble.DoubleFunctions;
 
+/**
+ *
+ * incomplete glossary of symbols
+ *
+ *
+ *      l       layer number. eg a_l = activation vector at layer l
+ *
+ *      L       highest layer number. a_L is the output of the network.
+ *
+ *      W_l     weight matrix at layer l, representing connections from
+ *                          layer l to layer l+1
+ *
+ *      b_l     additive bias vector at layer l. it has the same number
+ *                          of rows as a_l
+ *
+ *      z_l     value of each layer pre-activation. it is the input of the
+ *                          activation function (eg tanh). it is also used
+ *                          to calculate the derivatives of the weights. w_l
+ *                          has the shape (a, b) and a_l-1 has the shape
+ *                          (b, c), where a is the number if units in layer l,
+ *                          b is the number of units in layer l-1, and c is
+ *                          the batch size
+ *
+ *                                    z_l = w_l * a_l-1 + b_l
+ *
+ *      a_l     activation at layer l, a column vector. the activation
+ *                          function that is used by default in this class
+ *                          is the hyperbolic tangent (tanh)
+ *
+ *                             a_l = tanh( z_l ) = tanh( w_l * a_l-1 + b_l )
+ *
+ *      A       an array of every a_l
+ *
+ *      Z       an array of every z_l
+ *
+ *      AZ      an array, {A, Z}. must be returned as one object since
+ *                           calculating z_l is dependent on a_l-1, so they
+ *                           appear in the same function.
+ *
+ *
+ */
 public class Network {
 
     int
@@ -24,8 +65,8 @@ public class Network {
 
 
     DoubleFunction
-        _activation =  MatOps.lrelu,
-        _dActivation = MatOps.dLrelu;
+        _activation =  MatOps.relu,
+        _dActivation = MatOps.dRelu;
 
 
     /**
@@ -47,7 +88,6 @@ public class Network {
 
         sizes[0] = train.trainX.get(0).rows();
         sizes[sizes.length-1] = train.trainY.get(0).rows();
-
 
         for (int i = 1; i < sizes.length - 1; i++) {
             sizes[i] = hiddenLayerSizes[i - 1];

@@ -7,10 +7,45 @@ public class NetworkSettingsPanel extends JPanel {
         preferredSize = new Dimension(250, -1);
 
     String[]
-        opt_dataset = new String[]{"Census Salary", "Braille", "Red Wine", "White Wine", "OR", "AND", "XOR"},
-        opt_activation = new String[]{"Tanh", "ReLU", "Leaky ReLU", "Sigmoid", "Linear"},
-        opt_learningRate = new String[]{"0.5", "0.1", "0.05", "0.01", "0.01", "0.005", "0.001", "0.0005", "0.0001"},
-        opt_initialWeights = new String[]{"Normal", "Half-Normal", "Uniform [0, 1]", "Uniform [-1, 1]", "Uniform [0, 0.1]", "Uniform [-0.1, 0.1]"};
+
+        opt_dataset = new String[]{
+            "Census Salary",
+            "Braille",
+            "Red Wine",
+            "White Wine",
+            "OR",
+            "AND",
+            "XOR"
+        },
+
+        opt_activation = new String[]{
+            "Tanh",
+            "ReLU",
+            "Leaky ReLU",
+            "Sigmoid",
+            "Linear"
+        },
+
+        opt_learningRate = new String[]{
+            "0.5",
+            "0.1",
+            "0.05",
+            "0.01",
+            "0.01",
+            "0.005",
+            "0.001",
+            "0.0005",
+            "0.0001"
+        },
+
+        opt_initialWeights = new String[]{
+            "Normal",
+            "Half-Normal",
+            "Uniform [0, 1]",
+            "Uniform [-1, 1]",
+            "Uniform [0, 0.1]",
+            "Uniform [-0.1, 0.1]"
+        };
 
     JLabel
         label_dataset = new JLabel("Dataset"),
@@ -52,6 +87,8 @@ public class NetworkSettingsPanel extends JPanel {
         this.add(label_initialWeights);
         this.add(combo_initialWeights);
 
+        // start listening for user actions
+        //
         this.bindEventHandlers();
     }
 
@@ -66,9 +103,5 @@ public class NetworkSettingsPanel extends JPanel {
                 this.combo_dataset.getSelectedIndex();
             }
         });
-    }
-
-    public void updateNetworkSettings() {
-
     }
 }
