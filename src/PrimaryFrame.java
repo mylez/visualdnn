@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -5,23 +6,26 @@ public class PrimaryFrame extends JFrame {
 
     private Dimension defaultSize = new Dimension(700, 500);
 
-    private HyperParameterPanel hyperParameterPanel = new HyperParameterPanel();
+    public NetworkSettingsPanel networkSettingsPanel;
+    public NetworkGraphicsPanel networkGraphicsPanel;
 
-    public NetworkGraphicsPanel networkGraphicsPanel = new NetworkGraphicsPanel();
-
-    public PrimaryFrame() {
+    public PrimaryFrame(Network network) {
         super("PrimaryFrame");
-        this.init();
+        this.init(network);
     }
 
-    private void init() {
+    private void init(Network network) {
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setSize(this.defaultSize);
+
+        this.networkSettingsPanel = new NetworkSettingsPanel();
+        this.networkGraphicsPanel = new NetworkGraphicsPanel(network);
+
         this.setView_optionSelect();
     }
 
     public void setView_optionSelect() {
-        //this.add(hyperParameterPanel, BorderLayout.WEST);
-        this.add(networkGraphicsPanel, BorderLayout.CENTER);
+        this.add(this.networkSettingsPanel, BorderLayout.WEST);
+        this.add(this.networkGraphicsPanel, BorderLayout.CENTER);
     }
 }

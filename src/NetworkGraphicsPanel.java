@@ -1,5 +1,6 @@
-import cern.colt.matrix.tdouble.DoubleMatrix2D;
 
+import cern.colt.matrix.tdouble.DoubleFactory2D;
+import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import java.awt.*;
 import javax.swing.*;
 
@@ -16,7 +17,7 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     private double
-        maxWeightValue,
+        maxWeightValue = 1,
         maxActivationValue = 1;
 
 
@@ -24,11 +25,20 @@ public class NetworkGraphicsPanel extends JPanel {
         super();
     }
 
+    public NetworkGraphicsPanel(Network network) {
+        super();
+        DoubleMatrix2D[] weights = network.getWeights();
+        DoubleMatrix2D[][] AZ = network.activation(DoubleFactory2D.dense.random(weights[0].columns(), 1));
+        this.setWeights(weights);
+        this.setBiases(network.getBiases());
+        this.setActivations(AZ[0]);
+        this.setMaxActivationValue(1);
+        this.setMaxWeightValue(1);
+    }
 
     /**
      *
      * @param g
-     * @param network
      */
     @Override
     public void paintComponent(Graphics g) {
@@ -36,6 +46,13 @@ public class NetworkGraphicsPanel extends JPanel {
         //
         Dimension size = this.getSize();
         Graphics2D g2 = (Graphics2D) g;
+
+        // todo - delete this when activation function becomes an option
+        //
+        //this.maxActivationValue = Util.absMaxElement(this.netActivations);
+        //this.maxActivationValue = 1;
+        this.maxWeightValue = Util.absMaxElement(this.netWeights);
+
         // draw the network
         //
         this.paintBackground(g2, size);
@@ -109,6 +126,7 @@ public class NetworkGraphicsPanel extends JPanel {
             unitRadius = 13;
         // paint with full opacity
         //
+
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 
         g2.setRenderingHint(
@@ -117,26 +135,26 @@ public class NetworkGraphicsPanel extends JPanel {
         );
 
         for (int layer = 0; layer < numLayers; layer++) {
-            int xPos = this.unitXPos(xPad, layer) - unitRadius / 2,
+            int unitXPos = this.unitXPos(xPad, layer) - unitRadius / 2,
                 numUnits = this.netActivations[layer].rows();
             yPad = this.unitYPad(size.height, this.netActivations[layer].rows());
             for (int unit = 0; unit < numUnits; unit++) {
-                int yPos = this.unitYPos(size.height, yPad, numUnits, unit) - unitRadius / 2;
+                int unitYPos = this.unitYPos(size.height, yPad, numUnits, unit) - unitRadius / 2,
+                    labelYPos =  unitYPos + unitRadius / 2,
+                    labelXPos =  unitXPos + 2 * unitRadius;;
                 // get the activation value
                 //
                 double activation = this.netActivations[layer].get(unit, 0);
                 // draw unit as a filled circle with a gray 1px border
                 //
                 g2.setColor(Color.LIGHT_GRAY);
-                g2.drawOval(xPos - 1, yPos - 1, unitRadius + 1, unitRadius + 1);
+                g2.drawOval(unitXPos - 1, unitYPos - 1, unitRadius + 1, unitRadius + 1);
                 this.setDrawProperties_unit(g2, activation);
-                g2.fillOval(xPos, yPos, unitRadius, unitRadius);
+                g2.fillOval(unitXPos, unitYPos, unitRadius, unitRadius);
                 // draw labels representing the activation and bias
                 //
                 g2.setColor(Color.GRAY);
                 g2.setFont(new Font("Monospaced", Font.BOLD, this.fontSize));
-                int labelYPos =  yPos + unitRadius / 2,
-                    labelXPos =  xPos + 2 * unitRadius;
                 g2.drawString(this.roundFormat(activation), labelXPos, labelYPos);
                 if (layer > 0) {
                     g2.drawString(this.roundFormat(this.netBiases[layer - 1].get(unit, 0)), labelXPos, labelYPos + this.fontSize);
@@ -163,7 +181,7 @@ public class NetworkGraphicsPanel extends JPanel {
      * @param activation
      */
     private void setDrawProperties_unit(Graphics2D g2, double activation) {
-        int br = (int)Math.abs(activation * 255);
+        int br = Math.abs((int)Math.abs(255 * activation / this.maxActivationValue));
         Color color;
         if (activation > 0) {
             color = new Color(br, 0, 0);
@@ -203,6 +221,56 @@ public class NetworkGraphicsPanel extends JPanel {
         g2.setComposite(alpha);
         g2.setColor(color);
     }
+
+    /**
+     *
+     * @param network
+     * @param train
+     * @param learningRate
+     */
+    public void trainAnimated(Network network, Train train, double learningRate) {
+        DoubleMatrix2D[] dummyActivations = Util.onesWithShapes(
+            network.activation(train.trainX.get(0))[0]
+        );
+
+        this.setMaxActivationValue(1);
+        this.setActivations(dummyActivations);
+
+        new Timer(16, (e) -> {
+            for (int i = 0; i < 100; i++) {
+                DoubleMatrix2D
+                    x = train.trainX.get(i%4),
+                    y = train.trainY.get(i%4);
+
+                DoubleMatrix2D[][] AZ = network.activation(x);
+
+                DoubleMatrix2D[]
+                    delta = network.delta(AZ, y),
+                    gradient = network.gradient(AZ, delta);
+
+                network.backprop(gradient, delta, learningRate);
+                this.setMaxActivationValue(Util.absMaxElement(AZ[0]));
+                this.setActivations(AZ[0]);
+            }
+
+            DoubleMatrix2D[]
+                weights = network.getWeights(),
+                biases = network.getBiases();
+
+            int index = (int)((e.getWhen()%30000)/1000);
+
+            DoubleMatrix2D[][] AZ = network.activation(train.trainX.get(index));
+            this.setMaxActivationValue(Util.absMaxElement(AZ[0]));
+            this.setActivations(AZ[0]);
+
+            this.setMaxWeightValue(1);
+            this.setWeights(weights);
+            this.setBiases(biases);
+
+            this.repaint();
+        }).start();
+    }
+
 
 
     /**
@@ -287,6 +355,14 @@ public class NetworkGraphicsPanel extends JPanel {
      */
     public void setMaxWeightValue(double maxWeightValue) {
         this.maxWeightValue = Math.abs(maxWeightValue);
+    }
+
+    /**
+     *
+     * @param maxActivationValue
+     */
+    public void setMaxActivationValue(double maxActivationValue) {
+        this.maxActivationValue = Math.abs(maxActivationValue);
     }
 
     /**

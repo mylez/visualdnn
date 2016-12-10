@@ -28,6 +28,20 @@ public class MatOps {
      * relu is a non-linear activation function in range [0, inf)
      *
      */
+    public static DoubleFunction lrelu = (a) -> a > 0 ? a : .1 * a;
+
+
+    /**
+     * dRelu is the derivative of the relu function in {1, 0}
+     *
+     */
+    public static DoubleFunction dLrelu = (a) -> a > 0 ? 1 : .1;
+
+
+    /**
+     * relu is a non-linear activation function in range [0, inf)
+     *
+     */
     public static DoubleFunction relu = (a) -> a > 0 ? a : 0;
 
 

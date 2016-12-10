@@ -1,4 +1,6 @@
+
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
+import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 
 public class Util {
 
@@ -39,9 +41,9 @@ public class Util {
      */
     public static double absMaxElement(DoubleMatrix2D[] matrices) {
         double networkMax = 0;
-        for (DoubleMatrix2D matrice : matrices) {
-            double layerMax = matrice.getMaxLocation()[0];
-            double min = matrice.getMinLocation()[0];
+        for (DoubleMatrix2D mat: matrices) {
+            double layerMax = mat.getMaxLocation()[0];
+            double min = mat.getMinLocation()[0];
             if (layerMax > Math.abs(networkMax)) {
                 networkMax = layerMax;
             }
@@ -50,5 +52,16 @@ public class Util {
             }
         }
         return networkMax;
+    }
+
+    public static DoubleMatrix2D[] onesWithShapes(DoubleMatrix2D[] shapes) {
+        DoubleMatrix2D[] ones = new DoubleMatrix2D[shapes.length];
+        for (int i = 0; i < shapes.length; i++) {
+            ones[i] = new DenseDoubleMatrix2D(
+                shapes[i].rows(),
+                shapes[i].columns()
+            ).assign(1);
+        }
+        return ones;
     }
 }

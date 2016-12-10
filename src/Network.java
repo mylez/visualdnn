@@ -6,16 +6,16 @@ import cern.jet.math.tdouble.DoubleFunctions;
 
 public class Network {
 
-    double
-        learningRate = .01;
-
-
     int
         numLayers;
 
 
     int[]
         sizes;
+
+    double
+        randScale = 1,
+        randOffset = -.4;
 
 
     DoubleMatrix2D[]
@@ -24,8 +24,8 @@ public class Network {
 
 
     DoubleFunction
-        _activation = MatOps.tanh,
-        _dActivation = MatOps.dTanh;
+        _activation =  MatOps.lrelu,
+        _dActivation = MatOps.dLrelu;
 
 
     /**
@@ -33,23 +33,50 @@ public class Network {
      * @param sizes
      */
     public Network(int[] sizes) {
+        this.init(sizes);
+    }
+
+
+    /**
+     *
+     * @param train
+     * @param hiddenLayerSizes
+     */
+    public Network(Train train, int[] hiddenLayerSizes) {
+        int[] sizes = new int[hiddenLayerSizes.length + 2];
+
+        sizes[0] = train.trainX.get(0).rows();
+        sizes[sizes.length-1] = train.trainY.get(0).rows();
+
+
+        for (int i = 1; i < sizes.length - 1; i++) {
+            sizes[i] = hiddenLayerSizes[i - 1];
+        }
+
+        this.init(sizes);
+    }
+
+
+    /**
+     * given an array of sizes, initialize the network
+     *
+     * @param sizes
+     */
+    private void init(int[] sizes) {
         this.sizes = sizes;
         this.numLayers = sizes.length;
         this.weights = new DoubleMatrix2D[this.numLayers - 1];
         this.biases = new DoubleMatrix2D[this.numLayers - 1];
 
-        // initialize weight and bias matrices with proper shapes
-        //
-        double scale = .1, offset = 0;
         for (int l = 0; l < this.numLayers - 1; l++) {
             this.weights[l] = new DenseDoubleMatrix2D(sizes[l + 1], sizes[l])
                 .assign(MatOps.detRand)
-                .assign(DoubleFunctions.mult(scale))
-                .assign(DoubleFunctions.plus(offset));
+                .assign(DoubleFunctions.mult(this.randScale))
+                .assign(DoubleFunctions.plus(this.randOffset));
             this.biases[l] = new DenseDoubleMatrix2D(sizes[l + 1], 1)
                 .assign(MatOps.detRand)
-                .assign(DoubleFunctions.mult(scale))
-                .assign(DoubleFunctions.plus(offset));
+                .assign(DoubleFunctions.mult(this.randScale))
+                .assign(DoubleFunctions.plus(this.randOffset));
         }
     }
 
@@ -105,13 +132,13 @@ public class Network {
      * @param gradient
      * @param delta
      */
-    public void backprop(DoubleMatrix2D[] gradient, DoubleMatrix2D[] delta) {
+    public void backprop(DoubleMatrix2D[] gradient, DoubleMatrix2D[] delta, double learningRate) {
 
         for (int i_w = 0; i_w < gradient.length; i_w++) {
             this.weights[i_w].assign(
                 gradient[i_w]
                     .copy()
-                    .assign(DoubleFunctions.mult(this.learningRate)),
+                    .assign(DoubleFunctions.mult(learningRate)),
                 MatOps.entryMinus
             );
 
@@ -121,7 +148,7 @@ public class Network {
                 .assign(
                     delta[i_w + 1]
                         .copy()
-                        .assign(DoubleFunctions.mult(this.learningRate)),
+                        .assign(DoubleFunctions.mult(learningRate)),
                     MatOps.entryMinus
                 );
         }
@@ -159,11 +186,13 @@ public class Network {
                     MatOps.entryMultiply
                 );
         }
+
         return delta;
     }
 
 
     /**
+     *
      *  dC / dW_l_j_k = a_l-1_k * delta_l_j
      *
      *
@@ -184,8 +213,8 @@ public class Network {
             DoubleMatrix2D
                 // extend delta_l columns by height of a_l-1
                 delta_l = DoubleFactory2D
-                .dense
-                .repeat(delta[l], 1, A[l - 1].rows()),
+                    .dense
+                    .repeat(delta[l], 1, A[l - 1].rows()),
                 // extend transposed a_l-1 rows by height of delta_l
                 a_lminus1 = DoubleFactory2D
                     .dense
@@ -236,6 +265,7 @@ public class Network {
                     .assign(this._dActivation),
                 MatOps.entryMultiply
             );
+
         return batch_dc_daL;
     }
 
