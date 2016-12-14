@@ -17,7 +17,7 @@ class NetworkSettings {
         initialWeights = MatOps.rand;
 
     private int[]
-        hiddenLayerSizes = {30, 30};
+        hiddenLayerSizes = {5, 5};
 
 
     /**
