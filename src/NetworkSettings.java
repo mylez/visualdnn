@@ -87,6 +87,7 @@ class NetworkSettings {
             case 4:
                 this.activation = DoubleFunctions.identity;
                 this.dActivation = DoubleFunctions.constant(1);
+                break;
             default:
                 setActivation(0);
         }
@@ -100,24 +101,21 @@ class NetworkSettings {
     public void setDataSet(int code) {
         switch (code) {
             case 0:
-                this.dataSet = Train.DataSet.XOR;
+                this.dataSet = Train.DataSet.BRAILLE;
                 break;
             case 1:
-                this.dataSet = Train.DataSet.BRAILLE;
+                this.dataSet = Train.DataSet.XOR;
                 break;
             case 2:
                 this.dataSet = Train.DataSet.XOR;
                 break;
             case 3:
-                this.dataSet = Train.DataSet.XOR;
-                break;
-            case 4:
                 this.dataSet = Train.DataSet.OR;
                 break;
-            case 6:
+            case 4:
                 this.dataSet = Train.DataSet.AND;
                 break;
-            case 7:
+            case 5:
                 this.dataSet = Train.DataSet.XOR;
                 break;
             default:

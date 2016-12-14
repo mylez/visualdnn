@@ -317,6 +317,14 @@ public class Network {
         return batch_dc_daL;
     }
 
+    public static double accuracy(DoubleMatrix2D[] X, DoubleMatrix2D[] Y_) {
+        int correct = 0;
+        for (int i = 0; i < X.length; i++) {
+            correct += X[i].getMaxLocation()[1] == Y_[i].getMaxLocation()[1] ? 1 : 0;
+        }
+        return correct / (double)X.length;
+    }
+
     /**
      *
      * @return

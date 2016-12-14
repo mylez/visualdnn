@@ -9,7 +9,6 @@ public class NetworkSettingsPanel extends JPanel {
     private String[]
 
         opt_dataset = new String[]{
-            "Census Salary",
             "Braille",
             "Red Wine",
             "White Wine",
@@ -44,7 +43,7 @@ public class NetworkSettingsPanel extends JPanel {
             "Gaussian mean=0 stddev=5",
             "Gaussian mean=5 stddev=5",
             "Gaussian mean=0 stddev=0.1",
-            "Gaussian mean=.1 stddev=0.1",
+            "Gaussian mean=0.1 stddev=0.1",
             "Uniform [0, 0.1]",
             "Uniform [-0.1, 0.1]"
         };
@@ -53,7 +52,7 @@ public class NetworkSettingsPanel extends JPanel {
         label_dataset = new JLabel("Dataset"),
         label_activation = new JLabel("Activation"),
         label_learningRate = new JLabel("Learning Rate"),
-        label_initialWeights = new JLabel("Initial Weights");
+        label_initialWeights = new JLabel("Random Weights");
 
     private JButton
         button_startPause = new JButton("Start"),
@@ -147,15 +146,19 @@ public class NetworkSettingsPanel extends JPanel {
      *
      */
     private void bindEventHandlers() {
+        // user has changed learning rate slider
+        //
         this.slider_learningrate.addChangeListener(e -> {
-            this.learningRateValue = .001 + 5 * this.slider_learningrate.getValue() / 1000d;
-            this.label_learningRate.setText("Learning Rate: " + this.learningRateValue);
+            this.learningRateValue = .001 + 5 * this.slider_learningrate.getValue() / 10000d;
+            this.label_learningRate.setText("Learning Rate: " + Util.roundFormat(this.learningRateValue));
         });
-
+        // user has pressed reset button
+        //
         this.button_reset.addActionListener(e -> {
             this.primaryFrame.setNetworkSettings(this.getNetworkSettings());
         });
-
+        // user has pressed start / pause button
+        //
         this.button_startPause.addActionListener(e -> {
             Timer trainAnim = primaryFrame.getTrainAnimation();
             if (!trainAnim.isRunning()) {

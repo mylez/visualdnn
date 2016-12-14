@@ -4,9 +4,11 @@ import java.awt.*;
 
 public class PrimaryFrame extends JFrame {
 
-    Network network;
+    Network
+        network;
 
-    Train train;
+    Train
+        train;
 
     private Dimension
         defaultSize = new Dimension(700, 500);
@@ -43,6 +45,8 @@ public class PrimaryFrame extends JFrame {
         Train train = new Train(networkSettings);
         Network network = new Network(networkSettings, train);
         this.init(network, train, networkSettings);
+
+        this.setNetworkSettings(this.networkSettingsPanel.getNetworkSettings());
     }
 
 
@@ -57,7 +61,7 @@ public class PrimaryFrame extends JFrame {
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setSize(this.defaultSize);
 
-        this.networkGraphicsPanel = new NetworkGraphicsPanel(network);
+        this.networkGraphicsPanel = new NetworkGraphicsPanel(network, train, networkSettings);
         this.trainAnimation = this.networkGraphicsPanel.timerAnimation_trainCyclingInput(this.network, this.train, networkSettings);
         this.networkSettingsPanel = new NetworkSettingsPanel(this);
 
@@ -90,6 +94,9 @@ public class PrimaryFrame extends JFrame {
         if (wasRunning) {
             this.trainAnimation.start();
         }
+
+        this.networkGraphicsPanel.setInitialDrawState(this.network, this.train, networkSettings);
+        this.networkGraphicsPanel.repaint();
     }
 
 

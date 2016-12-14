@@ -119,7 +119,7 @@ public class MatOps {
      * seeded random numbers for predictable tests
      *
      */
-    public static DoubleFunction normal_mean_0_1_stddev_0_1 = (a) -> random.nextGaussian() * .1 + .1;
+    public static DoubleFunction normal_mean_0_1_stddev_0_1 = (a) -> random.nextGaussian() * 1 + .1;
 
 
     /**

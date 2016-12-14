@@ -69,4 +69,13 @@ public class Util {
         }
         return ones;
     }
+
+    /**
+     *
+     * @param num
+     * @return
+     */
+    public static String roundFormat(double num) {
+        return String.format("%s%.3f",  num < 0 ? "" : " ", num);
+    }
 }
