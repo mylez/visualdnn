@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class MatOps {
 
-    public static Random random = new Random();
+    public static Random random = new Random(0);
 
 
     /**
@@ -81,7 +81,45 @@ public class MatOps {
      * seeded random numbers for predictable tests
      *
      */
-    public static DoubleFunction detRand = (a) -> random.nextDouble();
+    public static DoubleFunction rand = (a) -> random.nextDouble();
+
+
+    /**
+     * seeded random numbers for predictable tests
+     *
+     */
+    public static DoubleFunction normal_mean_0_stdev_1 = (a) -> random.nextGaussian();
+
+    /**
+     * seeded random numbers for predictable tests
+     *
+     */
+    public static DoubleFunction normal_mean_1_stddev_1 = (a) -> random.nextGaussian() + 1;
+
+
+    /**
+     * seeded random numbers for predictable tests
+     *
+     */
+    public static DoubleFunction normal_mean_0_stddev_5 = (a) -> random.nextGaussian() * 5;
+
+    /**
+     * seeded random numbers for predictable tests
+     *
+     */
+    public static DoubleFunction normal_mean_5_stddev_5 = (a) -> random.nextGaussian() * 5 + 1;
+
+    /**
+     * seeded random numbers for predictable tests
+     *
+     */
+    public static DoubleFunction normal_mean_0_stddev_0_1 = (a) -> random.nextGaussian() * .1;
+
+    /**
+     * seeded random numbers for predictable tests
+     *
+     */
+    public static DoubleFunction normal_mean_0_1_stddev_0_1 = (a) -> random.nextGaussian() * .1 + .1;
 
 
     /**

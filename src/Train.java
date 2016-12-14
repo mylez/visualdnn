@@ -1,5 +1,6 @@
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -7,12 +8,65 @@ import java.util.Scanner;
 
 public class Train {
 
+    public enum DataSet {
+        BRAILLE,
+        XOR,
+        AND,
+        OR
+    }
+
+    double learningRate;
+
     ArrayList<DoubleMatrix2D>
         trainX,
         trainY,
 
         testX,
         testY;
+
+
+    /**
+     *
+     * @param learningRate
+     * @param dataSet
+     */
+    public Train(double learningRate, DataSet dataSet) {
+        this.init(learningRate, dataSet);
+    }
+
+    /**
+     *
+     * @param networkSettings
+     */
+    public Train(NetworkSettings networkSettings) {
+        this.init(networkSettings.getLearningRate(), networkSettings.getDataSet());
+    }
+
+    /**
+     *
+     * @param learningRate
+     * @param dataSet
+     */
+    private void init(double learningRate, DataSet dataSet) {
+        this.learningRate = learningRate;
+
+        switch (dataSet) {
+            case BRAILLE:
+                this.loadData_braille();
+                break;
+            case XOR:
+                this.loadData_xor();
+                break;
+            case AND:
+                this.loadData_and();
+                break;
+            case OR:
+                this.loadData_or();
+                break;
+            default:
+                this.loadData_xor();
+        }
+    }
 
 
     /**
@@ -96,6 +150,24 @@ public class Train {
 
 
     /**
+     * data to train a network as an AND logic gate
+     *
+     */
+    public void loadData_not() {
+        this.testX = new ArrayList<DoubleMatrix2D>();
+        this.testY = new ArrayList<DoubleMatrix2D>();
+
+        this.trainX = new ArrayList<DoubleMatrix2D>();
+        this.trainX.add(new DenseDoubleMatrix2D(new double[][]{{0}}));
+        this.trainX.add(new DenseDoubleMatrix2D(new double[][]{{1}}));
+
+        this.trainY = new ArrayList<DoubleMatrix2D>();
+        this.trainY.add(new DenseDoubleMatrix2D(new double[][]{{1}}));
+        this.trainY.add(new DenseDoubleMatrix2D(new double[][]{{0}}));
+    }
+
+
+    /**
      *
      * @param setX
      * @param setY
@@ -107,6 +179,7 @@ public class Train {
         try {
             scanner = new Scanner(new File(filePath));
         }
+
         catch (FileNotFoundException e) {
             System.err.println("unable to load braille data set: " + e);
             return;
@@ -125,7 +198,7 @@ public class Train {
                     String ch = line.substring(2*i, 2*i + 1);
                     val = Double.parseDouble(ch);
                 } catch (NumberFormatException e) {
-                    System.out.println("error reading braille data set: " + e);
+                    System.err.println("error reading braille data set: " + e);
                     val = -1;
                 }
 

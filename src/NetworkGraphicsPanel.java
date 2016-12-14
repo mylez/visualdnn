@@ -1,12 +1,14 @@
 import cern.colt.matrix.tdouble.DoubleFactory2D;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
+
 import java.awt.*;
 import javax.swing.*;
 
 public class NetworkGraphicsPanel extends JPanel {
 
-    int
-        fontSize = 11;
+    private int
+        fontSize = 11,
+        trainCycle = 0;
 
 
     private DoubleMatrix2D[]
@@ -24,6 +26,11 @@ public class NetworkGraphicsPanel extends JPanel {
         super();
     }
 
+
+    /**
+     *
+     * @param network
+     */
     public NetworkGraphicsPanel(Network network) {
         super();
         DoubleMatrix2D[] weights = network.getWeights();
@@ -35,6 +42,7 @@ public class NetworkGraphicsPanel extends JPanel {
         this.setMaxWeightValue(1);
     }
 
+
     /**
      *
      * @param g
@@ -45,18 +53,14 @@ public class NetworkGraphicsPanel extends JPanel {
         //
         Dimension size = this.getSize();
         Graphics2D g2 = (Graphics2D) g;
-
-        // todo - delete this when activation function becomes an option
-        //
-        //this.maxActivationValue = Util.absMaxElement(this.netActivations);
-        //this.maxActivationValue = 1;
-        this.maxWeightValue = Util.absMaxElement(this.netWeights);
+        g2.setFont(new Font("Monospaced", Font.BOLD, this.fontSize));
 
         // draw the network
         //
         this.paintBackground(g2, size);
         this.paintWeights(g2, size);
         this.paintUnits(g2, size);
+        this.paintLabels(g2, size);
     }
 
 
@@ -69,9 +73,7 @@ public class NetworkGraphicsPanel extends JPanel {
         // xPad and yPad define the distance between each unit drawn
         //
         int numLayers = this.netActivations.length,
-            xPad = this.unitXPad(size.width, numLayers),
-            yPadA = this.unitYPad(size.height, Util.maxRowCount(this.netWeights));
-
+            xPad = this.unitXPad(size.width, numLayers);
         // antialiasing becomes extremely slow when used on every
         // weight, so turn it off for this step
         //
@@ -79,9 +81,8 @@ public class NetworkGraphicsPanel extends JPanel {
             RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_OFF
         );
-
         for (int layer = 0; layer < numLayers - 1; layer++) {
-            yPadA = this.unitYPad(size.height, this.netActivations[layer].rows());
+            int yPadA = this.unitYPad(size.height, this.netActivations[layer].rows());
             // calculate the x positions of the currentlayer and the following layer
             //
             int unitXPosA = this.unitXPos(xPad, layer),
@@ -124,14 +125,11 @@ public class NetworkGraphicsPanel extends JPanel {
             unitRadius = 13;
         // paint with full opacity
         //
-
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
-
         g2.setRenderingHint(
             RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON
         );
-
         for (int layer = 0; layer < numLayers; layer++) {
             int unitXPos = this.unitXPos(xPad, layer) - unitRadius / 2,
                 numUnits = this.netActivations[layer].rows(),
@@ -139,7 +137,7 @@ public class NetworkGraphicsPanel extends JPanel {
             for (int unit = 0; unit < numUnits; unit++) {
                 int unitYPos = this.unitYPos(size.height, yPad, numUnits, unit) - unitRadius / 2,
                     labelYPos =  unitYPos + unitRadius / 2,
-                    labelXPos =  unitXPos + 2 * unitRadius;;
+                    labelXPos =  unitXPos + 2 * unitRadius;
                 // get the activation value
                 //
                 double activation = this.netActivations[layer].get(unit, 0);
@@ -152,7 +150,6 @@ public class NetworkGraphicsPanel extends JPanel {
                 // draw labels representing the activation and bias
                 //
                 g2.setColor(Color.GRAY);
-                g2.setFont(new Font("Monospaced", Font.BOLD, this.fontSize));
                 g2.drawString(this.roundFormat(activation), labelXPos, labelYPos);
                 if (layer > 0) {
                     g2.drawString(this.roundFormat(this.netBiases[layer - 1].get(unit, 0)), labelXPos, labelYPos + this.fontSize);
@@ -162,7 +159,14 @@ public class NetworkGraphicsPanel extends JPanel {
     }
 
 
+    private void paintLabels(Graphics2D g2, Dimension size) {
+        g2.setColor((Color.GRAY));
+        g2.drawString("Cycle: " + this.trainCycle, 10, 10);
+    }
+
+
     /**
+     * Paints a screen sized black square at (0, 0)
      *
      * @param g2
      * @param size
@@ -222,35 +226,38 @@ public class NetworkGraphicsPanel extends JPanel {
         g2.setColor(color);
     }
 
-    private int _trainAnimIndex = 0;
+
     /**
      *
      * @param network
      * @param train
-     * @param learningRate
      */
-    public void trainAnimated(Network network, Train train, double learningRate) {
-        DoubleMatrix2D[] dummyActivations = Util.onesWithShapes(
-            network.activation(train.trainX.get(0))[0]
-        );
+    public Timer timerAnimation_trainCyclingInput(Network network, Train train, NetworkSettings networkSettings) {
+        int dataLen = train.trainX.size(),
+            cycles = 1000,
+            cap = cycles - dataLen % cycles;
 
-        this.setMaxActivationValue(1);
-        this.setActivations(dummyActivations);
+        this.trainCycle = 0;
 
-        new Timer(16, (e) -> {
-            for (int i = 0; i < 100; i++) {
+        return new Timer(16, (e) -> {
+            for (int i = 0; i < cap; i++) {
+
+                this.trainCycle ++;
+
                 DoubleMatrix2D
-                    x = train.trainX.get(i%4),
-                    y = train.trainY.get(i%4);
+                    x = train.trainX.get(i % dataLen),
+                    y = train.trainY.get(i % dataLen);
 
-                DoubleMatrix2D[][] AZ = network.activation(x);
+                DoubleMatrix2D[][]
+                    AZ = network.activation(x);
 
                 DoubleMatrix2D[]
                     delta = network.delta(AZ, y),
                     gradient = network.gradient(AZ, delta);
 
-                network.backprop(gradient, delta, learningRate);
-                this.setMaxActivationValue(Util.absMaxElement(AZ[0]));
+                network.backprop(gradient, delta, train.learningRate);
+
+                this.setMaxActivationValue(1);
                 this.setActivations(AZ[0]);
             }
 
@@ -259,20 +266,26 @@ public class NetworkGraphicsPanel extends JPanel {
                 biases = network.getBiases();
 
             int delay = 10000,
-                index = (int)(train.trainX.size()*(e.getWhen()%delay) / delay);
+                index = (int)(train.trainX.size() * (e.getWhen() % delay) / delay);
 
-            DoubleMatrix2D[][] AZ = network.activation(train.trainX.get(index));
-            this.setMaxActivationValue(Util.absMaxElement(AZ[0]));
+            DoubleMatrix2D[][]
+                AZ = network.activation(train.trainX.get(index));
+
+            this.setMaxWeightValue(network.getMaxWeightValue());
+
+            if (networkSettings.isOneBounded) {
+                this.setMaxActivationValue(1);
+            } else {
+                this.setMaxActivationValue(Util.absMaxElement(AZ[0]));
+            }
+
             this.setActivations(AZ[0]);
-
-            this.setMaxWeightValue(1);
             this.setWeights(weights);
             this.setBiases(biases);
 
             this.repaint();
-        }).start();
+        });
     }
-
 
 
     /**
@@ -359,13 +372,15 @@ public class NetworkGraphicsPanel extends JPanel {
         this.maxWeightValue = Math.abs(maxWeightValue);
     }
 
+
     /**
      *
      * @param maxActivationValue
      */
     public void setMaxActivationValue(double maxActivationValue) {
-        this.maxActivationValue = Math.abs(maxActivationValue);
+        this.maxActivationValue = Math.max(1, Math.abs(maxActivationValue));
     }
+
 
     /**
      *

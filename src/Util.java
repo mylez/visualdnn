@@ -54,6 +54,11 @@ public class Util {
         return networkMax;
     }
 
+    /**
+     *
+     * @param shapes
+     * @return
+     */
     public static DoubleMatrix2D[] onesWithShapes(DoubleMatrix2D[] shapes) {
         DoubleMatrix2D[] ones = new DoubleMatrix2D[shapes.length];
         for (int i = 0; i < shapes.length; i++) {

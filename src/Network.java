@@ -6,10 +6,9 @@ import cern.jet.math.tdouble.DoubleFunctions;
 
 /**
  *
- * incomplete glossary of symbols
+ * glossary of symbols
  *
- *
- *      l       layer number. eg a_l = activation vector at layer l
+ *      l       layer number. eg a_l = _activation vector at layer l
  *
  *      L       highest layer number. a_L is the output of the network.
  *
@@ -19,8 +18,8 @@ import cern.jet.math.tdouble.DoubleFunctions;
  *      b_l     additive bias vector at layer l. it has the same number
  *                          of rows as a_l
  *
- *      z_l     value of each layer pre-activation. it is the input of the
- *                          activation function (eg tanh). it is also used
+ *      z_l     value of each layer pre-_activation. it is the input of the
+ *                          _activation function (eg tanh). it is also used
  *                          to calculate the derivatives of the weights. w_l
  *                          has the shape (a, b) and a_l-1 has the shape
  *                          (b, c), where a is the number if units in layer l,
@@ -29,7 +28,7 @@ import cern.jet.math.tdouble.DoubleFunctions;
  *
  *                                    z_l = w_l * a_l-1 + b_l
  *
- *      a_l     activation at layer l, a column vector. the activation
+ *      a_l     _activation at layer l, a column vector. the _activation
  *                          function that is used by default in this class
  *                          is the hyperbolic tangent (tanh)
  *
@@ -39,35 +38,34 @@ import cern.jet.math.tdouble.DoubleFunctions;
  *
  *      Z       an array of every z_l
  *
- *      AZ      an array, {A, Z}. must be returned as one object since
- *                           calculating z_l is dependent on a_l-1, so they
- *                           appear in the same function.
+ *      AZ      a 2d array of column vecs, {A, Z}. must be returned as one
+ *                           object since calculating z_l is dependent on
+ *                           a_l-1, so they appear in the same function.
  *
  *
  */
 public class Network {
 
-    int
+    private int
         numLayers;
 
+    private int[]
+        sizes = {};
 
-    int[]
-        sizes;
-
-    double
-        randScale = 1,
-        randOffset = -.4;
+    private double
+        randScale = .2,
+        randOffset = 0;
 
 
-    DoubleMatrix2D[]
+    private DoubleMatrix2D[]
         weights,
         biases;
 
 
-    DoubleFunction
-        _activation =  MatOps.relu,
-        _dActivation = MatOps.dRelu;
-
+    private DoubleFunction
+        _activation =  MatOps.tanh,
+        _dActivation = MatOps.dTanh,
+        random = MatOps.rand;
 
     /**
      *
@@ -83,8 +81,9 @@ public class Network {
      * @param train
      * @param hiddenLayerSizes
      */
-    public Network(Train train, int[] hiddenLayerSizes) {
-        int[] sizes = new int[hiddenLayerSizes.length + 2];
+    public Network(NetworkSettings networkSettings, Train train) {
+        int[] hiddenLayerSizes = networkSettings.getHiddenLayerSizes(),
+            sizes = new int[hiddenLayerSizes.length + 2];
 
         sizes[0] = train.trainX.get(0).rows();
         sizes[sizes.length-1] = train.trainY.get(0).rows();
@@ -92,6 +91,10 @@ public class Network {
         for (int i = 1; i < sizes.length - 1; i++) {
             sizes[i] = hiddenLayerSizes[i - 1];
         }
+
+        this._activation = networkSettings.getActivation();
+        this._dActivation = networkSettings.getdActivation();
+        this.random = networkSettings.getInitialWeights();
 
         this.init(sizes);
     }
@@ -110,11 +113,11 @@ public class Network {
 
         for (int l = 0; l < this.numLayers - 1; l++) {
             this.weights[l] = new DenseDoubleMatrix2D(sizes[l + 1], sizes[l])
-                .assign(MatOps.detRand)
+                .assign(this.random)
                 .assign(DoubleFunctions.mult(this.randScale))
                 .assign(DoubleFunctions.plus(this.randOffset));
             this.biases[l] = new DenseDoubleMatrix2D(sizes[l + 1], 1)
-                .assign(MatOps.detRand)
+                .assign(this.random)
                 .assign(DoubleFunctions.mult(this.randScale))
                 .assign(DoubleFunctions.plus(this.randOffset));
         }
@@ -122,6 +125,7 @@ public class Network {
 
 
     /**
+     *
      *  z_l = W_l * a_l-1 + b_l
      *
      *
@@ -163,6 +167,7 @@ public class Network {
 
 
     /**
+     *
      * w_l_j_k' = w_l_j_k .- n * dW_l_j_k
      *
      *
@@ -184,6 +189,7 @@ public class Network {
 
             // i_w + 1 because delta includes first
             // layer while weight gradients do not
+
             this.biases[i_w]
                 .assign(
                     delta[i_w + 1]
@@ -196,6 +202,7 @@ public class Network {
 
 
     /**
+     *
      * delta_L = nabla_C_a .* dTanh(z_L)
      *
      *
@@ -273,6 +280,7 @@ public class Network {
 
 
     /**
+     *
      *  dC / daL = ( a_L .- y ) .* dTanh( z_L )
      *
      *
@@ -284,7 +292,7 @@ public class Network {
     public DoubleMatrix2D costDerivative(DoubleMatrix2D y, DoubleMatrix2D aL, DoubleMatrix2D zL) {
         //
         // find dC / daL by subtracting the target
-        // value y from output activation value aL
+        // value y from output _activation value aL
         //
         // ( a_L .- y )
         //
@@ -295,7 +303,7 @@ public class Network {
             .assign(y, MatOps.entryMinus)
             //
             // then do entry-wise multiplication of
-            // nabla_C_a by the activation derivative
+            // nabla_C_a by the _activation derivative
             //
             //  ( a_L .- y ) .* dTanh( z_L )
             //
