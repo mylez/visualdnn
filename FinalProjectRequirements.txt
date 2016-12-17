@@ -25,7 +25,7 @@ The second constructor is found in the file NetworkGraphicsPanel.java on line 36
 3)	(2 pts) Write (and use) appropriate getters and setters for your private instance variables (you must have at least
     one getter and at least one setter).
 
-A getter is found in the file NetworkSettings.java on line 146.  It is called in the file Network.java on line 100.
+A getter is found in the file NetworkSettings.java on line 154.  It is called in the file Network.java on line 100.
 
 Another getter is found in the file Network.java on line 340.  It is called in the file NetworkGraphicsPanel.java on
     line 297.
@@ -33,7 +33,7 @@ Another getter is found in the file Network.java on line 340.  It is called in t
 
 4)	(3 pts) Use a decision (e.g. if-else).
 
-A decision is used in the file PrimaryFrame.java on line 93 to check if the animation had been running
+A decision is used in the file PrimaryFrame.java on line 92 to check if the animation had been running
     previous to the stop method being called. If it was running, the decision restarts the animation.
 
 
@@ -80,7 +80,7 @@ The method ________________ is overloaded.  The overloaded versions of the metho
     project).
 
 File I/O is performed in the file Train.java on lines 182 through 208. the braille dataset is read from the file
-    data/braille/30/data_set30.txt.
+    data/braille/30/data_set30.txt
 
 
 12)	(2 pts) Write a try-catch block to perform exception handling. Your header for your main() method should NOT say
