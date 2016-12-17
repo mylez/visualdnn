@@ -4,6 +4,9 @@ import cern.colt.matrix.tdouble.DoubleMatrix2D;
 import cern.colt.matrix.tdouble.impl.DenseDoubleMatrix2D;
 import cern.jet.math.tdouble.DoubleFunctions;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 /**
  *
  * glossary of symbols
@@ -49,8 +52,6 @@ public class Network {
     private int
         numLayers;
 
-    private int[]
-        sizes = {};
 
     private double
         randScale = .2,
@@ -67,29 +68,33 @@ public class Network {
         _dActivation = MatOps.dTanh,
         random = MatOps.rand;
 
+
     /**
+     * create a new Network object based on a list of sizes
      *
      * @param sizes
      */
-    public Network(int[] sizes) {
+    public Network(ArrayList<Integer> sizes) {
         this.init(sizes);
     }
 
 
     /**
+     * create a new network object from a NetworkSettings object
+     * and a Train object
      *
      * @param train
      * @param hiddenLayerSizes
      */
     public Network(NetworkSettings networkSettings, Train train) {
-        int[] hiddenLayerSizes = networkSettings.getHiddenLayerSizes(),
-            sizes = new int[hiddenLayerSizes.length + 2];
+        ArrayList<Integer> hiddenLayerSizes = networkSettings.getHiddenLayerSizes(),
+            sizes = new ArrayList<>(Collections.nCopies(hiddenLayerSizes.size() + 2, 0));
 
-        sizes[0] = train.trainX.get(0).rows();
-        sizes[sizes.length-1] = train.trainY.get(0).rows();
+        sizes.set(0, train.trainX.get(0).rows());
+        sizes.set(sizes.size() - 1, train.trainY.get(0).rows());
 
-        for (int i = 1; i < sizes.length - 1; i++) {
-            sizes[i] = hiddenLayerSizes[i - 1];
+        for (int i = 1; i < sizes.size() - 1; i++) {
+            sizes.set(i, hiddenLayerSizes.get(i - 1));
         }
 
         this._activation = networkSettings.getActivation();
@@ -105,18 +110,18 @@ public class Network {
      *
      * @param sizes
      */
-    private void init(int[] sizes) {
-        this.sizes = sizes;
-        this.numLayers = sizes.length;
+    private void init(ArrayList<Integer> sizes) {
+        this.numLayers = sizes.size();
         this.weights = new DoubleMatrix2D[this.numLayers - 1];
         this.biases = new DoubleMatrix2D[this.numLayers - 1];
 
         for (int l = 0; l < this.numLayers - 1; l++) {
-            this.weights[l] = new DenseDoubleMatrix2D(sizes[l + 1], sizes[l])
+            this.weights[l] = new DenseDoubleMatrix2D(sizes.get(l + 1), sizes.get(l))
                 .assign(this.random)
                 .assign(DoubleFunctions.mult(this.randScale))
                 .assign(DoubleFunctions.plus(this.randOffset));
-            this.biases[l] = new DenseDoubleMatrix2D(sizes[l + 1], 1)
+
+            this.biases[l] = new DenseDoubleMatrix2D(sizes.get(l + 1), 1)
                 .assign(this.random)
                 .assign(DoubleFunctions.mult(this.randScale))
                 .assign(DoubleFunctions.plus(this.randOffset));
@@ -125,6 +130,8 @@ public class Network {
 
 
     /**
+     * this computes the pre-activation and activation
+     * values for every layer
      *
      *  z_l = W_l * a_l-1 + b_l
      *
@@ -132,22 +139,22 @@ public class Network {
      *  a_l = tanh( z_l )
      *
      *
-     * @param a
+     * @param a_0
      * @return
      */
-    public DoubleMatrix2D[][] activation(DoubleMatrix2D a) {
+    public DoubleMatrix2D[][] activation(DoubleMatrix2D a_0) {
         DoubleMatrix2D[] A = new DoubleMatrix2D[this.numLayers];
         DoubleMatrix2D[] Z = new DoubleMatrix2D[this.numLayers];
 
-        A[0] = a.copy();
-        Z[0] = a.copy();
+        A[0] = a_0.copy();
+        Z[0] = a_0.copy();
 
         for (int l = 1; l < this.numLayers; l++) {
             // [l - 1] because l = 0 (the input row)
             // stores no weights or biases
             DoubleMatrix2D b_l = DoubleFactory2D
                 .dense
-                .repeat(this.biases[l - 1], 1, a.columns());
+                .repeat(this.biases[l - 1], 1, a_0.columns());
             //
             // a_l = W_l * a_l-1 + b_l
             //
@@ -167,6 +174,7 @@ public class Network {
 
 
     /**
+     * applies the gradient vectors to each layer.
      *
      * w_l_j_k' = w_l_j_k .- n * dW_l_j_k
      *
@@ -187,9 +195,9 @@ public class Network {
                 MatOps.entryMinus
             );
 
-            // i_w + 1 because delta includes first
-            // layer while weight gradients do not
-
+            // i_w + 1 because delta includes first layer while
+            // weight gradients do not
+            //
             this.biases[i_w]
                 .assign(
                     delta[i_w + 1]
@@ -202,6 +210,7 @@ public class Network {
 
 
     /**
+     * computes the delta value for every layer in the network
      *
      * delta_L = nabla_C_a .* dTanh(z_L)
      *
@@ -239,6 +248,9 @@ public class Network {
 
 
     /**
+     * this computes the derivative of the cost function
+     * with respect to every activation in the network
+     *
      *
      *  dC / dW_l_j_k = a_l-1_k * delta_l_j
      *
@@ -280,6 +292,8 @@ public class Network {
 
 
     /**
+     * this computes the derivative of the cost function
+     * with respect to the last layer activation
      *
      *  dC / daL = ( a_L .- y ) .* dTanh( z_L )
      *
@@ -317,15 +331,9 @@ public class Network {
         return batch_dc_daL;
     }
 
-    public static double accuracy(DoubleMatrix2D[] X, DoubleMatrix2D[] Y_) {
-        int correct = 0;
-        for (int i = 0; i < X.length; i++) {
-            correct += X[i].getMaxLocation()[1] == Y_[i].getMaxLocation()[1] ? 1 : 0;
-        }
-        return correct / (double)X.length;
-    }
 
     /**
+     * get the weights
      *
      * @return
      */
@@ -333,7 +341,9 @@ public class Network {
         return this.weights;
     }
 
+
     /**
+     * get the biases
      *
      * @return
      */
@@ -341,7 +351,9 @@ public class Network {
         return this.biases;
     }
 
+
     /**
+     * get the maximum weight value
      *
      * @return
      */

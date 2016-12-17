@@ -1,4 +1,3 @@
-import cern.colt.matrix.tdouble.DoubleFactory2D;
 import cern.colt.matrix.tdouble.DoubleMatrix2D;
 
 import java.awt.*;
@@ -29,6 +28,8 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     /**
+     * initialize a new graphics panel with references
+     * to the network models to use
      *
      * @param network
      */
@@ -39,6 +40,8 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     /**
+     * draws the current state of the network to the network
+     * graphics panel
      *
      * @param g
      */
@@ -59,6 +62,10 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     /**
+     * draws the weights between each layer as a blue or red line.
+     * blue lines represent negative weights while red lines
+     * represent positive weights. weights closer to zero are painted
+     * with lower opacity.
      *
      * @param g2
      * @param size
@@ -109,6 +116,7 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     /**
+     * Paint the units as blue or red circles.
      *
      * @param g2
      * @param size
@@ -152,7 +160,11 @@ public class NetworkGraphicsPanel extends JPanel {
         }
     }
 
+
     /**
+     * paint the unit information labels. the top label
+     * represents the unit activation and the bottom
+     * label represents the unit bias.
      *
      * @param g2
      */
@@ -167,6 +179,7 @@ public class NetworkGraphicsPanel extends JPanel {
         g2.drawString("accuracy: " + Util.roundFormat(100 * this.accuracy) + "%", 10, 10 + this.fontSize);
     }
 
+
     /**
      * Paints a screen sized black square at (0, 0)
      *
@@ -180,6 +193,8 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     /**
+     * sets the Graphics2D color and opacity to based on
+     * the current activation
      *
      * @param g2
      * @param activation
@@ -197,6 +212,8 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     /**
+     * sets the current Graphics2D color and opacity based
+     * on the current activation and weight value
      *
      * @param g2
      * @param weight
@@ -230,6 +247,8 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     /**
+     * create a new 60hz timer that paints the state of the network
+     * during training.
      *
      * @param network
      * @param train
@@ -249,24 +268,20 @@ public class NetworkGraphicsPanel extends JPanel {
                 DoubleMatrix2D
                     x = train.trainX.get(i % dataLen),
                     y = train.trainY.get(i % dataLen);
-
                 // get the layer activations
                 //
                 DoubleMatrix2D[][]
                     AZ = network.activation(x);
-
                 // increment numCorrect if the prediction matches the label
                 //
                 numCorrect += AZ[0][AZ[0].length - 1].getMaxLocation()[1] == y.getMaxLocation()[1]
                     ? 1
                     : 0;
-
                 // get the delta and gradient values for each layer
                 //
                 DoubleMatrix2D[]
                     delta = network.delta(AZ, y),
                     gradient = network.gradient(AZ, delta);
-
                 // apply the backpropagation step to adjust weights
                 //
                 network.backprop(gradient, delta, train.learningRate);
@@ -274,7 +289,6 @@ public class NetworkGraphicsPanel extends JPanel {
                 this.setMaxActivationValue(1);
                 this.setActivations(AZ[0]);
             }
-
             // average accuracy for one cycle
             //
             this.accuracy = numCorrect / (double)cycles;
@@ -307,6 +321,9 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     /**
+     * return the space to draw between each layer of
+     * units. it is the width of the panel divided by
+     * the number of layers.
      *
      * @param width
      * @param numLayers
@@ -318,17 +335,22 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     /**
+     * return the space to draw between each unit within
+     * a layer. it is the height of the screen divided by
+     * the number of units within the layer
      *
      * @param height
-     * @param maxNumUnits
+     * @param numUnits
      * @return
      */
-    private int unitYPad(int height, int maxNumUnits) {
-        return height / maxNumUnits;
+    private int unitYPad(int height, int numUnits) {
+        return height / numUnits;
     }
 
 
     /**
+     * return the x-position for a unit based on its layer
+     * number and the x-padding of the network.
      *
      * @param xPad
      * @param layer
@@ -340,6 +362,9 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     /**
+     * return the y-position of the unit based on the
+     * screen height, y-padding, number of layer unit,
+     * and the number of the unit in the layer
      *
      * @param height
      * @param yPad
@@ -356,6 +381,7 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     /**
+     * set the network weights to be drawn
      *
      * @param networkWeights
      */
@@ -365,6 +391,7 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     /**
+     * set the network biases to be drawn
      *
      * @param networkBiases
      */
@@ -374,6 +401,7 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     /**
+     * set the network activations to be drawn
      *
      * @param networkActivations
      */
@@ -383,6 +411,9 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     /**
+     * set the maximum weight value. this is used to
+     * pick which node should be drawn with maximum
+     * red / blue and which should be drawn as transparent
      *
      * @param maxWeightValue
      */
@@ -392,6 +423,10 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     /**
+     * set the maximum activation value. this is useful
+     * when the activations are not bounded by one, and
+     * the maximum of the network is needed to choose
+     * the appropriate red / blue.
      *
      * @param maxActivationValue
      */
@@ -401,6 +436,7 @@ public class NetworkGraphicsPanel extends JPanel {
 
 
     /**
+     * this draws the newly created network
      *
      * @param network
      * @param train

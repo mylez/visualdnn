@@ -26,15 +26,8 @@ public class Train {
 
 
     /**
-     *
-     * @param learningRate
-     * @param dataSet
-     */
-    public Train(double learningRate, DataSet dataSet) {
-        this.init(learningRate, dataSet);
-    }
-
-    /**
+     * create a new Train object using learning rate and
+     * data set settings from a NetworkSettings object
      *
      * @param networkSettings
      */
@@ -42,7 +35,9 @@ public class Train {
         this.init(networkSettings.getLearningRate(), networkSettings.getDataSet());
     }
 
+
     /**
+     * set up the Train object
      *
      * @param learningRate
      * @param dataSet
@@ -168,6 +163,7 @@ public class Train {
 
 
     /**
+     * read the data from the brialle dataset
      *
      * @param setX
      * @param setY
@@ -178,9 +174,7 @@ public class Train {
 
         try {
             scanner = new Scanner(new File(filePath));
-        }
-
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             System.err.println("unable to load braille data set: " + e);
             return;
         }

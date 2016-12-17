@@ -27,17 +27,9 @@ public class PrimaryFrame extends JFrame {
 
 
     /**
-     *
-     * @param network
-     * @param train
-     */
-    public PrimaryFrame(Network network, Train train) {
-        super("PrimaryFrame");
-        this.init(network, train, new NetworkSettings());
-    }
-
-
-    /**
+     * create a new primary frame, which will in turn
+     * instantiate new NetworkSettings, Train, and Network
+     * objects with default settings
      *
      */
     public PrimaryFrame() {
@@ -51,10 +43,12 @@ public class PrimaryFrame extends JFrame {
 
 
     /**
+     * initialize the PrimaryFrame object
      *
      * @param network
      */
     private void init(Network network, Train train, NetworkSettings networkSettings) {
+        this.setLayout(new BorderLayout());
         this.train = train;
         this.network = network;
 
@@ -70,6 +64,8 @@ public class PrimaryFrame extends JFrame {
 
 
     /**
+     * set the view to the optionSelect view. this ended
+     * up beign the only view required for this project
      *
      */
     public void setView_optionSelect() {
@@ -80,6 +76,9 @@ public class PrimaryFrame extends JFrame {
 
 
     /**
+     * take a NetworkSettings object, update the current
+     * network settings, and repaint the network graphics
+     * panel to reflect the new settings
      *
      * @param networkSettings
      */
@@ -102,6 +101,7 @@ public class PrimaryFrame extends JFrame {
 
 
     /**
+     * return the current train animation object
      *
      * @return
      */

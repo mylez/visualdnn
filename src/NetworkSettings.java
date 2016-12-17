@@ -1,26 +1,37 @@
 import cern.colt.function.tdouble.DoubleFunction;
 import cern.jet.math.tdouble.DoubleFunctions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+
 class NetworkSettings {
 
     public boolean isOneBounded = false;
 
+
     private double
         learningRate = 0.001;
 
+
     private Train.DataSet
         dataSet = Train.DataSet.XOR;
+
 
     private DoubleFunction
         activation = MatOps.tanh,
         dActivation = MatOps.dTanh,
         initialWeights = MatOps.rand;
 
-    private int[]
-        hiddenLayerSizes = {5, 5};
+
+    private ArrayList<Integer>
+        hiddenLayerSizes = new ArrayList<>(Arrays.asList(new Integer[] {3, 3}));
 
 
     /**
+     * convert the selected index of the initial weights
+     * combo box into a DoubleFunction representing the
+     * desired random distribution
      *
      * @param code
      */
@@ -52,6 +63,8 @@ class NetworkSettings {
 
 
     /**
+     * convert the selected index of the learning rate
+     * slider into a number
      *
      * @param value
      */
@@ -61,6 +74,9 @@ class NetworkSettings {
 
 
     /**
+     * convert the selected index of the activation function
+     * combo box into a DoubleFunction representing the
+     * desired activation
      *
      * @param code
      */
@@ -95,28 +111,24 @@ class NetworkSettings {
 
 
     /**
+     * convert the selected index of the data set into a
+     * member of the Train.DataSet enum
      *
      * @param code
      */
     public void setDataSet(int code) {
         switch (code) {
             case 0:
-                this.dataSet = Train.DataSet.BRAILLE;
+                this.dataSet = Train.DataSet.XOR;
                 break;
             case 1:
-                this.dataSet = Train.DataSet.XOR;
-                break;
-            case 2:
-                this.dataSet = Train.DataSet.XOR;
-                break;
-            case 3:
                 this.dataSet = Train.DataSet.OR;
                 break;
-            case 4:
+            case 2:
                 this.dataSet = Train.DataSet.AND;
                 break;
-            case 5:
-                this.dataSet = Train.DataSet.XOR;
+            case 3:
+                this.dataSet = Train.DataSet.BRAILLE;
                 break;
             default:
                 this.setDataSet(0);
@@ -125,33 +137,17 @@ class NetworkSettings {
 
 
     /**
+     * set the current hidden layer sizes
      *
      * @param hiddenLayerSizes
      */
-    public void setHiddenLayerSizes(int[] hiddenLayerSizes) {
+    public void setHiddenLayerSizes(ArrayList<Integer> hiddenLayerSizes) {
         this.hiddenLayerSizes = hiddenLayerSizes;
     }
 
 
     /**
-     *
-     * @return
-     */
-    public Train.DataSet getDataSet() {
-        return this.dataSet;
-    }
-
-
-    /**
-     *
-     * @return
-     */
-    public double getLearningRate() {
-        return this.learningRate;
-    }
-
-
-    /**
+     * get the current activation
      *
      * @return
      */
@@ -161,6 +157,27 @@ class NetworkSettings {
 
 
     /**
+     * get the current data set enum member
+     *
+     * @return
+     */
+    public Train.DataSet getDataSet() {
+        return this.dataSet;
+    }
+
+
+    /**
+     * get the current learning rate
+     *N
+     * @return
+     */
+    public double getLearningRate() {
+        return this.learningRate;
+    }
+
+
+    /**
+     * get the current activation derivative
      *
      * @return
      */
@@ -170,6 +187,8 @@ class NetworkSettings {
 
 
     /**
+     * get the current initial weight random distribution
+     * function
      *
      * @return
      */
@@ -177,7 +196,12 @@ class NetworkSettings {
         return this.initialWeights;
     }
 
-    public int[] getHiddenLayerSizes() {
+    /**
+     * get the current hidden layer size array list
+     *
+     * @return
+     */
+    public ArrayList<Integer> getHiddenLayerSizes() {
         return this.hiddenLayerSizes;
     }
 }

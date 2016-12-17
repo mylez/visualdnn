@@ -4,107 +4,138 @@ Required items (must earn all 20 points in items 1-8 to get full credit on the f
 
 1)	(4 pts: 2 pts per class) Write and use at least 2 classes (you can count a driver class as one of these classes).
 
-The first class I wrote was Network. The purpose of this class is to implement a neural network using the
-    backpropagation algorithm. This class is used as a data model for the GUI.
+The first class I wrote was Network.  The purpose of this class is to contain and operate on data that represents an
+    artificial neural network. This includes arrays of matrices for the weights and biases and methods implementing
+    feed-forward and back-propagation.
 
-The second class I wrote was NetworkGraphicsPanel. The purpose of this class is to render the state of a Network to a
-    resizable panel object using java.awt.Graphics2D
+The second class I wrote was NetworkGraphicsPanel.  The purpose of this class is to draw the state of the network as a
+    visually intuitive network of connections and units using a java.awt.Graphics2D object and overriding the
+    paintComponent(Graphics g) method.
 
 
 2)	(2 pts) Write and use at least 2 constructors; only one constructor can be no-arg.
 
-The first constructor is found in the file Network.java on line 84. The header for the constructor is
-    public Network(NetworkSettings networkSettings, Train train, int[] hiddenLayerSizes);
+The first constructor is found in the file Network.java on line 89.  The header for the constructor is
+    public Network(NetworkSettings networkSettings, Train train)
 
-The second constructor is found in the file Train.java on line 27.  The header for the constructor is
-    public Train(double learningRate, DataSet dataSet);
+The second constructor is found in the file NetworkGraphicsPanel.java on line 36.  The header for the constructor is
+    NetworkGraphicsPanel(Network network, Train train, Network networkSettings)
 
 
-3)	(2 pts) Write (and use) appropriate getters and setters for your private instance variables (you must have at least one getter and at least one setter).
+3)	(2 pts) Write (and use) appropriate getters and setters for your private instance variables (you must have at least
+    one getter and at least one setter).
 
-A getter is found in the file Network.java on line 315.  It is called in the file NetworkGraphicsPanel.java on line 33.
+A getter is found in the file NetworkSettings.java on line 146.  It is called in the file Network.java on line 100.
 
-Another getter is found in the file NetworkSettings.java on line 143.  It is called in the file ________________________ on line ________________________.
+Another getter is found in the file Network.java on line 340.  It is called in the file NetworkGraphicsPanel.java on
+    line 297.
 
 
 4)	(3 pts) Use a decision (e.g. if-else).
 
-A decision is used in the file ________________________ on line ________________________ to do ________________________.
+A decision is used in the file PrimaryFrame.java on line 93 to check if the animation had been running
+    previous to the stop method being called. If it was running, the decision restarts the animation.
 
 
 5)	(3 pts) Use a loop (e.g. for, while).
 
-A loop is used in the file ________________________ on line ________________________ to do ________________________.
+A loop is used in the file Network.java on line 190 to iterate through the layers of the network and update each weight
+and bias in an attempt to minimize the mean squared error.
 
 
 6)	(2 pts) Write and use a method, other than a getter, that returns a value.
 
-The method ________________________ is defined in the file ________________________ on line ________________________.  The method header is ________________________.  This method is called in the file ________________________ on line ________________________.
+The method activation is defined in the file Network.java on line 145.  The
+    method header is public DoubleMatrix2D[][] activation(DoubleMatrix2D a_0).  This method is called in the file
+    NetworkGraphicsPanel.java on line 274.
 
 
 7)	(2 pts) Write and use a method, other than a setter, that has two or more parameters.
 
-The method ________________________ is defined in the file ________________________ on line ________________________.  The method header is ________________________.  This method is called in the file ________________________ on line ________________________.
+The method costDerivative is defined in the file Network.java on line 306.  The method header is
+    public DoubleMatrix2D costDerivative(DoubleMatrix2D y, DoubleMatrix2D aL, DoubleMatrix2D zL).  This method is called
+    in the file Network.java on line 233.
 
-8) (2 pts) Ensure your program does not have any run-time errors.  You should not assume a nice user.  You may need to implement exception handling to meet this requirement (which counts toward the extra requirements category below).
+8) (2 pts) Ensure your program does not have any run-time errors.  You should not assume a nice user.  You may need to
+implement exception handling to meet this requirement (which counts toward the extra requirements category below).
 
 ***********************************
 Optional items (must earn 10 points from these options to get full credit on the final project):
 
 9)	(2 pts) Use an array.
 
-An array is declared in the file ________________________ on line ________________________.  It is initialized in the file ________________________ on line ________________________, and the contents of the array are accessed in the file ________________________ on line ________________________.
+An array is declared in the file NetworkSettings.java on line 28.  It is initialized in the file NetworkSettings.java
+    on line 28, and the contents of the array are accessed in the file NetworkSettings.java on line 205.
 
 
 10)	(2 pts) Overload at least one method that is not a constructor.
 
-The method ________________________ is overloaded.  The overloaded versions of the methods are declared in the file ________________________ on lines ________________________.
+The method ________________ is overloaded.  The overloaded versions of the methods are declared in the file
+    _________________ on lines ________________.
 
-11)	(3 pts) Perform file I/O.  You choose whether to read and/or write a file.  You choose whether to use a text file or a binary file (you�ll need to look up examples for binary file I/O, as no reading on it will be assigned).  Note that calling the write() method on a Picture or Sound object does NOT count.  If you decide to read or write a text file, you MUST use the Scanner and/or PrintWriter classes as discussed during the class (and demoed in the FileCopy project).
+11)	(3 pts) Perform file I/O.  You choose whether to read and/or write a file.  You choose whether to use a text file or
+    a binary file (you’ll need to look up examples for binary file I/O, as no reading on it will be assigned).  Note
+    that calling the write() method on a Picture or Sound object does NOT count.  If you decide to read or write a text
+    file, you MUST use the Scanner and/or PrintWriter classes as discussed during the class (and demoed in the FileCopy
+    project).
 
-File I/O is performed in the file ________________________ on lines ________________________.  ________________________ is (written to/read from) the file ________________________.
-
-
-12)	(2 pts) Write a try-catch block to perform exception handling. Your header for your main() method should NOT say "throws Exception" (Hints: You�ll need use a try-catch to do file I/O.  Consult the Java API for possible exceptions that various methods can throw.).
-
-A try-catch block is found on lines ________________________ of the file ________________________.
-
-13)	(2 pts) Utilize inheritance: write and use your own class that extends another class (either one that you write yourself, or one that is part of the bookClasses or the standard Java API).
-
-A class that inherits from another class is ________________________, in the file ________________________.
+File I/O is performed in the file Train.java on lines 182 through 208. the braille dataset is read from the file
+    data/braille/30/data_set30.txt.
 
 
-14)	(1 pt) Override a superclass method and use the @Override annotation (Hint: You�ll probably do this to implement event handling).
+12)	(2 pts) Write a try-catch block to perform exception handling. Your header for your main() method should NOT say
+    "throws Exception" (Hints: You’ll need use a try-catch to do file I/O.  Consult the Java API for possible exceptions
+    that various methods can throw.).
 
-A superclass method that is overridden is found on line ________________________ of the file ________________________.
+A try-catch block is found on lines 214 through 223 of the file NetworkSettingsPanel.java.
+
+13)	(2 pts) Utilize inheritance: write and use your own class that extends another class (either one that you write
+    yourself, or one that is part of the bookClasses or the standard Java API).
+
+A class that inherits from another class is PrimaryFrame, in the file PrimaryFrame.java.
 
 
-15)	(2 pts) Utilize polymorphism.  In your requirements file, you must explain how your code is polymorphic in order to earn these points.
+14)	(1 pt) Override a superclass method and use the @Override annotation (Hint: You’ll probably do this to implement
+ event handling).
 
-Polymorphism is found in the file ________________________ on lines ________________________.  This code is polymorphic because ________________________.
+    A superclass method that is overridden is found on line 49 of the file NetworkGraphicsPanel.java
+
+
+15)	(2 pts) Utilize polymorphism.  In your requirements file, you must explain how your code is polymorphic in order to
+    earn these points.
+
+Polymorphism is found in the file ________________________ on lines ________________________.  This code is polymorphic
+    because ________________________.
 
 
 16)	(2 pts) Write and use an abstract class.
 
-An abstract class is found in the file ________________________ on lines ________________________.  It is used in the file ________________________ on lines ________________________.
+An abstract class is found in the file ________________________ on lines ________________________.  It is used in the
+    file ________________________ on lines ________________________.
 
 
-17)	(1 pt) Accept keyboard input.  Note: If you do not create a GUI, this should be done using the Scanner class.  If you do create a GUI, you should use a text box or another similar input gathering component; you should NOT expect the user to type input outside of your GUI window(s).
+17)	(1 pt) Accept keyboard input.  Note: If you do not create a GUI, this should be done using the Scanner class.
+    If you do create a GUI, you should use a text box or another similar input gathering component; you should NOT
+    expect the user to type input outside of your GUI window(s).
 
-Keyboard input is accepted by the code in the file ________________________ on line ________________________.
-
-
-18)	(1 pt) Display output to the screen.  Note: If you do not create a GUI, this should be done using System.out.println.  If you do create a GUI, to earn credit for this, some text-displaying component must change while the program is running.
-
-Output is displayed to the screen in the file ________________________ on line ________________________.
+Keyboard input is accepted by the code in the file NetworkSettingsPanel on line 154.
 
 
-19)	(2 pts per component, up to 6 pts) Use the following components, handling events that they generate (you cannot just use 3 of the same type of component - you must use 3 different components).  Each component must DO something in the final version of the project - it can�t just be decorative:
+18)	(1 pt) Display output to the screen.  Note: If you do not create a GUI, this should be done using
+    System.out.println.  If you do create a GUI, to earn credit for this, some text-displaying component must change
+    while the program is running.
+
+Output is displayed to the screen in the file NetworkGraphicsPanel on line 57.
+
+
+19)	(2 pts per component, up to 6 pts) Use the following components, handling events that they generate (you cannot just
+use 3 of the same type of component - you must use 3 different components).  Each component must DO something in the
+final version of the project - it can’t just be decorative:
 a)	JLabel
 b)	JTextField
 c)	JButton
 d)	JCheckBox
-e)	JRadioButton (don�t forget to use a ButtonGroup)
+e)	JRadioButton (don’t forget to use a ButtonGroup)
 f)	JComboBox
 g)	JList
 h)	JTextArea
@@ -112,33 +143,38 @@ i)	JSlider
 j)	Some other Java Swing component (list the name of the component below)
 
 The three components we used were:
-________________________ created on line _______ of ________.java
-________________________ created on line _______ of ________.java
-________________________ created on line _______ of ________.java
+JLabel created on line 39 of NetworkSettingsPanel.java
+JButton created on line 47 of NetworkSettingsPanel.java
+JSlider created on line 62 of NetworkSettingsPanel.java.java
 
-20)	(1 pt per layout manager used) Use the layout managers listed below: 
+20)	(1 pt per layout manager used) Use the layout managers listed below:
 a)	FlowLayout
 b)	BorderLayout
 c)	GridLayout
 
 The FlowLayout manager was applied to ________________ on line _______ of ________.java
-The BorderLayout manager was applied to ________________ on line _______ of ________.java
-The GridLayout manager was applied to ________________ on line _______ of ________.java
+The BorderLayout manager was applied to PrimaryFrame on line 51 of PrimaryFrame.java
+The GridLayout manager was applied to NetworkSettingsPanel on line 94 of NetworkSettingsPanel.java
 
 
-21)	(1 pt) Use a JPanel (Hint: You'll need to do this in order to use more than one layout manager).
+21)	(1 pt) Use a JPanel (Hint: You’ll need to do this in order to use more than one layout manager).
 
-A JPanel instantiation can be found on line _______ of ________.java
-
-
-22)	(2 pt) Use an inner class or an anonymous inner class (Hint: You'll want to do this in order to handle events and make your components DO something).
-
-An inner class (or an anonymous inner class) can be found on lines ____ - ____ of ________.java.  The name of this inner class (if it was not anonymous) is _______________.
+A JPanel instantiation can be found on line 58 of PrimaryFrame.java
 
 
-23)	(1 pt) Use a non-default font somewhere in your GUI by utilizing the method setFont().  Note that you can draw your text as a String - you don�t need to change the text on any particular component.
+22)	(2 pt) Use an inner class or an anonymous inner class (Hint: You’ll want to do this in order to handle events and
+    make your components DO something).
 
-A non-default font is found on line _______ of ________.java.
+* note - I used a lambda expression instead of an anonymous class because they are much nicer looking
+
+An inner class (lambda expression) (or an anonymous inner class) can be found on lines 153 - 179 of
+    NetworkSettingsPanel.java. The name of this inner class (if it was not anonymous) is (it was anonymous).
+
+
+23)	(1 pt) Use a non-default font somewhere in your GUI by utilizing the method setFont().  Note that you can draw your
+    text as a String - you don’t need to change the text on any particular component.
+
+A non-default font is found on line 54 of NetworkGraphicsPanel.java.
 
 
 24)	(1 pt) Use a non-default color somewhere in your GUI.
@@ -150,19 +186,21 @@ b)	rectangles
 c)	ovals
 
 
-A line was drawn on line _______ of ________.java.
+A line was drawn on line 111 of NetworkGraphicsPanel.java.
 A rectangle was drawn on line _______ of ________.java.
-An oval was drawn on line _______ of ________.java.
+An oval was drawn on line 149 of NetworkGraphicsPanel.java.
 
 
 26)	(1 pt) Call repaint() somewhere in your code, to immediately refresh the graphics in some component.
 
-repaint() is called on line _______ of ________.java.
+repaint() is called on line 318 of NetworkGraphicsPanel.java.
 
 
-27)	(2 pts) Handle mouse events, like movement and clicking.  Note that clicking on a button does not count as a mouse event - you must actually do mouse event handling, which means you must implement at least one of the methods from the MouseListener or MouseMotionListener interfaces.  Alternately, you may use an adapter class.
+27)	(2 pts) Handle mouse events, like movement and clicking.  Note that clicking on a button does not count as a mouse
+    event - you must actually do mouse event handling, which means you must implement at least one of the methods from
+     the MouseListener or MouseMotionListener interfaces.  Alternately, you may use an adapter class.
 
-Mouse _____________ (movement or clicking) was handled by the code on lines _______________ of the file ____________________.
+Mouse clicking was handled by the code on lines 187 of the file NetworkSettingsPanel.java.
 
 
 28)	(1 pt) Have a menu system.
@@ -170,7 +208,8 @@ Mouse _____________ (movement or clicking) was handled by the code on lines ____
 A menu system is implemented in lines _________________ of the file _________________.
 
 
-29)	(?? pts) Propose your own requirement by posting a private note on Piazza.  Make sure to get your requirement approved before the final submission deadline!
+29)	(?? pts) Propose your own requirement by posting a private note on Piazza.  Make sure to get your requirement
+    approved before the final submission deadline!
 
-The additional requirement that was approved was _____________________, worth _______ points.  The implementation of this requirement is in the file _______________ on lines ________________.
- 
+The additional requirement that was approved was _____________________, worth _______ points.  The implementation of
+    this requirement is in the file _______________ on lines ________________.
